@@ -1,7 +1,8 @@
+/* eslint-disable */
 /* global describe, it */
 "use strict";
 
-import RC4 from "../src/rc4.ts";
+import RC4 from "../src/rc4";
 import assert from "node:assert";
 
 function sq(x) {
@@ -112,6 +113,13 @@ describe("currentState + setState", function () {
       var rc4 = new RC4("deadbeef");
       var state = rc4.currentState();
       state.i = "foo";
+      rc4.setState(state);
+    });
+
+    assert.throws(function () {
+      var rc4 = new RC4("deadbeef");
+      var state = rc4.currentState();
+      state.s[0] = 999;
       rc4.setState(state);
     });
 

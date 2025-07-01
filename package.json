@@ -2,13 +2,18 @@
   "name": "rc4",
   "version": "0.1.5",
   "description": "RC4 random number generator",
-  "main": "rc4.js",
+  "main": "dist/rc4.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "mocha",
-    "build": "tsc"
+    "pretest": "npm run build",
+    "test": "mocha dist/test --timeout 5000",
+    "posttest": "npm run coverage",
+    "build": "tsc",
+    "lint": "eslint . --ext .js,.ts",
+    "coverage": "c8 --include='dist/src/**/*.js' --reporter=text --reporter=html mocha dist/test",
+    "clean": "git clean -fdx -e node_modules"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -30,12 +35,11 @@
   },
   "homepage": "https://github.com/phadej/rc4",
   "devDependencies": {
-    "@types/node": "^24.0.8",
-    "david": "^12.0.0",
-    "eslint": "^9.30.0",
-    "istanbul": "^0.4.5",
-    "jscs": "^3.0.7",
-    "jshint": "^2.13.6",
+    "@types/node": "^24.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "c8": "^10.1.3",
+    "eslint": "^9.30.1",
     "mocha": "^11.7.1",
     "typescript": "^5.8.3"
   }

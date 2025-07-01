@@ -1,4 +1,5 @@
-const {default: RC4} = require("./src/rc4.ts");
+/* eslint-disable no-redeclare */
+import RC4 from "./src/rc4.ts";
 
 var generator = new RC4("my seed"); // string or array of integers
 
@@ -14,11 +15,11 @@ console.log(generator.randomFloat()); // 0.14815412228927016
 generator.setState(state);
 console.log(generator.randomFloat()); // 0.14815412228927016
 
-var RC4small = require("./src/rc4.ts").RC4small;
+import { RC4small } from "./src/rc4.ts";
 
 var generator = new RC4small("my other seed");
 
 var state = generator.currentStateString(); // 18 character hexadecimal string
-console.log(generator.randomFloat());  // 0.9362740234937519
+console.log(generator.randomFloat()); // 0.9362740234937519
 generator.setStateString(state);
 console.log(generator.randomFloat()); // 0.9362740234937519

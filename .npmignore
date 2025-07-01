@@ -1,9 +1,7 @@
 .npmignore
 .gitignore
-.jshintrc
 .eslintrc
-.jscsrc
-.travis.yml
+.github/
 
 synopsis.js
 
