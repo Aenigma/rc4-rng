@@ -3,23 +3,9 @@
 
 // :: string | array integer -> array integer
 function seed(key: string | number[] | undefined, N: number): number[] {
-
-  function identityPermutation() {
-    const s: number[] = new Array(N);
-    for (let i = 0; i < N; i++) {
-      s[i] = i;
-    }
-    return s;
-  }
-
   if (key === undefined) {
-    key = new Array(N);
-    for (let k = 0; k < N; k++) {
-      key[k] = Math.floor(Math.random() * N);
-    }
+    key = Array(N).fill(0).map(() => Math.floor(Math.random() * N));
   } else if (typeof key === "string") {
-    // to string
-    key = "" + key;
     key = key.split("").map(c => c.charCodeAt(0) % N);
   } else if (Array.isArray(key)) {
     if (!key.every(v => typeof v === "number" && v === (v | 0))) {
@@ -29,14 +15,12 @@ function seed(key: string | number[] | undefined, N: number): number[] {
     throw new TypeError("invalid seed key specified");
   }
 
-  const keylen = key.length;
-
   // reseed state
-  const s = identityPermutation();
+  const s = Array(N).fill(0).map((_, i) => i);
 
   let j = 0;
   for (let i = 0; i < N; i++) {
-    j = (j + s[i] + key[i % keylen]) % N;
+    j = (j + s[i] + key[i % key.length]) % N;
     const tmp = s[i];
     s[i] = s[j];
     s[j] = tmp;
@@ -104,7 +88,7 @@ export default class RC4 {
   random(max: number | string): number;
   random(min: number | string, max: number | string): number;
   random(a: number | string, b?: number | string | undefined): number {
-    if (a === undefined || (arguments.length >= 2)) {
+    if (a === undefined || (arguments.length > 2)) {
       throw new TypeError("random takes one or two integer arguments");
     }
 
@@ -128,20 +112,18 @@ export default class RC4 {
     return {
       i: this.i,
       j: this.j,
-      s: this.s.slice(),
+      s: [...this.s],
     };
   }
 
   setState(state: RC4State) {
-    const s = state.s;
-    const i = state.i;
-    const j = state.j;
+    const { s, i, j } = state;
 
-    if (!(i === (i | 0) && 0 <= i && i < this.s.length)) {
+    if (!(i === (i | 0) && i >= 0 && i < this.s.length)) {
       throw new Error("state.i should be integer [0, " + (this.s.length - 1) + "]");
     }
 
-    if (!(j === (j | 0) && 0 <= j && j < this.s.length)) {
+    if (!(j === (j | 0) && j >= 0 && j < this.s.length)) {
       throw new Error("state.j should be integer [0, " + (this.s.length - 1) + "]");
     }
 
@@ -151,15 +133,20 @@ export default class RC4 {
     }
 
     // check that all params are there
-    for (var k = 0; k < this.s.length; k++) {
-      if (s.indexOf(k) === -1) {
-        throw new Error("state should be permutation of 0.." + (this.s.length - 1) + ": " + k + " is missing");
+    const seen: Array<number | undefined> = Array(s.length);
+    for (let k = 0; k < s.length; k++) {
+      if (s[k] < 0 || s[k] >= s.length) {
+        throw new Error("state should be permutation of 0.." + (s.length - 1) + ": " + s[k] + " is out of range");
       }
+      if (seen[s[k]] !== undefined) {
+        throw new Error("state should be permutation of 0.." + (s.length - 1) + ": " + s[k] + " is duplicated");
+      }
+      seen[s[k]] = k;
     }
 
     this.i = i;
     this.j = j;
-    this.s = s; // assign copy
+    this.s = [...s]; // assign copy
   }
 }
 
@@ -194,11 +181,7 @@ export class RC4small extends RC4 {
     const j = fromHex(stateString[1]);
     const s = stateString.split("").slice(2).map(fromHex);
 
-    this.setState({
-      i,
-      j,
-      s,
-    });
+    this.setState({ i, j, s });
   }
 }
 
