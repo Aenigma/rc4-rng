@@ -72,27 +72,25 @@ interface RC4State {
 export default class RC4 {
   public static RC4small: typeof RC4small;
 
-  protected keyLength: number;
   protected i: number;
   protected j: number;
   protected s: number[];
 
   constructor(key: string | number[], keyLength = 256) {
-    this.keyLength = keyLength;
     this.i = 0;
     this.j = 0;
     this.s = seed(key, keyLength);
   }
 
   randomNative() {
-    this.i = (this.i + 1) % this.keyLength;
-    this.j = (this.j + this.s[this.i]) % this.keyLength;
+    this.i = (this.i + 1) % this.s.length;
+    this.j = (this.j + this.s[this.i]) % this.s.length;
 
     const tmp = this.s[this.i];
     this.s[this.i] = this.s[this.j];
     this.s[this.j] = tmp;
 
-    const k = this.s[(this.s[this.i] + this.s[this.j]) % this.keyLength];
+    const k = this.s[(this.s[this.i] + this.s[this.j]) % this.s.length];
 
     return k;
   }
@@ -150,23 +148,23 @@ export default class RC4 {
     const i = state.i;
     const j = state.j;
 
-    if (!(i === (i | 0) && 0 <= i && i < this.keyLength)) {
-      throw new Error("state.i should be integer [0, " + (this.keyLength - 1) + "]");
+    if (!(i === (i | 0) && 0 <= i && i < this.s.length)) {
+      throw new Error("state.i should be integer [0, " + (this.s.length - 1) + "]");
     }
 
-    if (!(j === (j | 0) && 0 <= j && j < this.keyLength)) {
-      throw new Error("state.j should be integer [0, " + (this.keyLength - 1) + "]");
+    if (!(j === (j | 0) && 0 <= j && j < this.s.length)) {
+      throw new Error("state.j should be integer [0, " + (this.s.length - 1) + "]");
     }
 
     // check length
-    if (!Array.isArray(s) || s.length !== this.keyLength) {
-      throw new Error("state should be array of length " + this.keyLength);
+    if (!Array.isArray(s) || s.length !== this.s.length) {
+      throw new Error("state should be array of length " + this.s.length);
     }
 
     // check that all params are there
-    for (var k = 0; k < this.keyLength; k++) {
+    for (var k = 0; k < this.s.length; k++) {
       if (s.indexOf(k) === -1) {
-        throw new Error("state should be permutation of 0.." + (this.keyLength - 1) + ": " + k + " is missing");
+        throw new Error("state should be permutation of 0.." + (this.s.length - 1) + ": " + k + " is missing");
       }
     }
 
