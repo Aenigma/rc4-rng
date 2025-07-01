@@ -29,11 +29,11 @@
   },
   "homepage": "https://github.com/phadej/rc4",
   "devDependencies": {
-    "david": "^6.1.4",
-    "eslint": "^1.3.1",
-    "istanbul": "^0.3.6",
-    "jscs": "^2.1.1",
-    "jshint": "^2.6.0",
-    "mocha": "^2.1.0"
+    "david": "^12.0.0",
+    "eslint": "^9.30.0",
+    "istanbul": "^0.4.5",
+    "jscs": "^3.0.7",
+    "jshint": "^2.13.6",
+    "mocha": "^11.7.1"
   }
 }
