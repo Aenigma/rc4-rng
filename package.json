@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha",
+    "build": "tsc"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -29,11 +30,13 @@
   },
   "homepage": "https://github.com/phadej/rc4",
   "devDependencies": {
+    "@types/node": "^24.0.8",
     "david": "^12.0.0",
     "eslint": "^9.30.0",
     "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
     "jshint": "^2.13.6",
-    "mocha": "^11.7.1"
+    "mocha": "^11.7.1",
+    "typescript": "^5.8.3"
   }
 }

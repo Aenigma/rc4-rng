@@ -1,7 +1,7 @@
 /* global describe, it */
 "use strict";
 
-var RC4 = require("../rc4.js");
+var RC4 = require("../dist/rc4.js");
 var assert = require("assert");
 
 function sq(x) {

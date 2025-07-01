@@ -3,26 +3,16 @@
 // Based on RC4 algorithm, as described in
 // http://en.wikipedia.org/wiki/RC4
 
-/**
- * @param {number} n
- * @returns {boolean}
- */
-function isInteger(n) {
-  return parseInt(n, 10) === n;
+
+function isInteger(n: string | number): boolean {
+  return parseInt(n as string, 10) === n;
 }
 
 // :: string | array integer -> array integer
-/**
- * @param {string | number[]} key
- * @param {number} N
- * @returns {number[]}
- */
-function seed(key, N) {
-  /**
-   * @returns {number[]}
-   */
+function seed(key: string | number[] | undefined, N: number): number[] {
+
   function identityPermutation() {
-    const s = new Array(N);
+    const s: number[] = new Array(N);
     for (let i = 0; i < N; i++) {
       s[i] = i;
     }
@@ -37,11 +27,9 @@ function seed(key, N) {
   } else if (typeof key === "string") {
     // to string
     key = "" + key;
-    key = key.split("").map(function (c) { return c.charCodeAt(0) % N; });
+    key = key.split("").map(c => c.charCodeAt(0) % N);
   } else if (Array.isArray(key)) {
-    if (!key.every(function (v) {
-      return typeof v === "number" && v === (v | 0);
-    })) {
+    if (!key.every(v => typeof v === "number" && v === (v | 0))) {
       throw new TypeError("invalid seed key specified: not array of integers");
     }
   } else {
@@ -50,7 +38,7 @@ function seed(key, N) {
 
   const keylen = key.length;
 
-  // resed state
+  // reseed state
   const s = identityPermutation();
 
   let j = 0;
@@ -67,40 +55,35 @@ function seed(key, N) {
 const ordA = "a".charCodeAt(0);
 const ord0 = "0".charCodeAt(0);
 
-/**
- * @param {number} n
- * @returns {string}
- */
-function toHex(n) {
+function toHex(n: number) {
   return n < 10 ? String.fromCharCode(ord0 + n) : String.fromCharCode(ordA + n - 10);
 }
 
-/**
- * @param {string} c
- * @returns {number}
- */
-function fromHex(c) {
+function fromHex(c: string) {
   return parseInt(c, 16);
 }
-class RC4 {
 
-  /**
- * @param {string | number[]} key
- */
-  constructor(key, keyLength = 256) {
-    /** @type {number} */
+interface RC4State {
+  i: number;
+  j: number;
+  s: number[];
+}
+
+export default class RC4 {
+  public static RC4small: typeof RC4small;
+
+  protected keyLength: number;
+  protected i: number;
+  protected j: number;
+  protected s: number[];
+
+  constructor(key: string | number[], keyLength = 256) {
     this.keyLength = keyLength;
-    /** @type {number} */
     this.i = 0;
-    /** @type {number} */
     this.j = 0;
-    /** @type {number[]} */
     this.s = seed(key, keyLength);
   }
 
-  /**
-   * @returns {number}
-   */
   randomNative() {
     this.i = (this.i + 1) % this.keyLength;
     this.j = (this.j + this.s[this.i]) % this.keyLength;
@@ -123,19 +106,13 @@ class RC4 {
     return ((a * 256 + b) * 256 + c) * 256 + d;
   }
 
-  /**
-   * @returns {number}
-   */
   randomFloat() {
     return this.randomUInt32() / 0x100000000;
   }
 
-  /**
-   * @param {number | string} a
-   * @param {number | string | undefined} b
-   * @returns {number}
-   */
-  random(a, b) {
+  random(max: number | string): number;
+  random(min: number | string, max: number | string): number;
+  random(a: number | string, b?: number | string | undefined): number {
     if (arguments.length === 1) {
       a = 0;
       b = arguments[0];
@@ -146,21 +123,21 @@ class RC4 {
       throw new TypeError("random takes one or two integer arguments");
     }
 
-    if (!isInteger(a) || !isInteger(b)) {
+    a = typeof a === "string" ? parseInt(a, 10) : a;
+    b = typeof b === "string" ? parseInt(b, 10) : b;
+
+    if (!Number.isInteger(a) || !Number.isInteger(b)) {
       throw new TypeError("random takes one or two integer arguments");
     }
 
     return a + this.randomUInt32() % (b - a + 1);
   }
 
-  /**
-   * @returns {number}
-   */
-  randomByte() {
+  randomByte(): number {
     return this.randomNative();
   }
 
-  currentState() {
+  currentState(): RC4State {
     return {
       i: this.i,
       j: this.j,
@@ -168,15 +145,11 @@ class RC4 {
     };
   }
 
-  /**
-   * @param {RC4} state
-   */
-  setState(state) {
+  setState(state: RC4State) {
     const s = state.s;
     const i = state.i;
     const j = state.j;
 
-    /* eslint-disable yoda */
     if (!(i === (i | 0) && 0 <= i && i < this.keyLength)) {
       throw new Error("state.i should be integer [0, " + (this.keyLength - 1) + "]");
     }
@@ -184,7 +157,6 @@ class RC4 {
     if (!(j === (j | 0) && 0 <= j && j < this.keyLength)) {
       throw new Error("state.j should be integer [0, " + (this.keyLength - 1) + "]");
     }
-    /* eslint-enable yoda */
 
     // check length
     if (!Array.isArray(s) || s.length !== this.keyLength) {
@@ -203,25 +175,20 @@ class RC4 {
     this.s = s; // assign copy
   }
 }
-class RC4small extends RC4 {
-  constructor(key) {
+
+export class RC4small extends RC4 {
+  constructor(key: string | number[]) {
     super(key, 16);
   }
 
-  /**
-   * @returns {number}
-   */
-  randomByte() {
+  randomByte(): number {
     const a = this.randomNative();
     const b = this.randomNative();
 
     return a * 16 + b;
   }
 
-  /**
-   * @returns {string}
-   */
-  currentStateString() {
+  currentStateString(): string {
     const state = this.currentState();
 
     const i = toHex(state.i);
@@ -231,10 +198,7 @@ class RC4small extends RC4 {
     return res;
   }
 
-  /**
-   * @param {string} stateString
-   */
-  setStateString(stateString) {
+  setStateString(stateString: string) {
     if (!stateString.match(/^[0-9a-f]{18}$/)) {
       throw new TypeError("RC4small stateString should be 18 hex character string");
     }
@@ -252,5 +216,8 @@ class RC4small extends RC4 {
 }
 
 RC4.RC4small = RC4small;
-
-module.exports = RC4;
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = RC4;
+  module.exports.RC4small = RC4small;
+  module.exports.default = RC4;
+}
