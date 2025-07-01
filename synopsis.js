@@ -1,4 +1,4 @@
-var RC4 = require("./rc4.js");
+const {default: RC4} = require("./src/rc4.ts");
 
 var generator = new RC4("my seed"); // string or array of integers
 
@@ -14,7 +14,7 @@ console.log(generator.randomFloat()); // 0.14815412228927016
 generator.setState(state);
 console.log(generator.randomFloat()); // 0.14815412228927016
 
-var RC4small = require("./rc4.js").RC4small;
+var RC4small = require("./src/rc4.ts").RC4small;
 
 var generator = new RC4small("my other seed");
 

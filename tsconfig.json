@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": ["es2015"],
     "module": "commonjs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": false,
+    "strict": true,
+    "erasableSyntaxOnly": true,
     "skipLibCheck": true
   }
 }

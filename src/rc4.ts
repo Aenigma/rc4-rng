@@ -1,12 +1,5 @@
-"use strict";
-
 // Based on RC4 algorithm, as described in
 // http://en.wikipedia.org/wiki/RC4
-
-
-function isInteger(n: string | number): boolean {
-  return parseInt(n as string, 10) === n;
-}
 
 // :: string | array integer -> array integer
 function seed(key: string | number[] | undefined, N: number): number[] {
@@ -63,7 +56,7 @@ function fromHex(c: string) {
   return parseInt(c, 16);
 }
 
-interface RC4State {
+export interface RC4State {
   i: number;
   j: number;
   s: number[];
@@ -72,9 +65,9 @@ interface RC4State {
 export default class RC4 {
   public static RC4small: typeof RC4small;
 
-  protected i: number;
-  protected j: number;
-  protected s: number[];
+  private i: number;
+  private j: number;
+  private s: number[];
 
   constructor(key: string | number[], keyLength = 256) {
     this.i = 0;
@@ -111,24 +104,20 @@ export default class RC4 {
   random(max: number | string): number;
   random(min: number | string, max: number | string): number;
   random(a: number | string, b?: number | string | undefined): number {
-    if (arguments.length === 1) {
-      a = 0;
-      b = arguments[0];
-    } else if (arguments.length === 2) {
-      a = arguments[0];
-      b = arguments[1];
-    } else {
+    if (a === undefined || (arguments.length >= 2)) {
       throw new TypeError("random takes one or two integer arguments");
     }
 
     a = typeof a === "string" ? parseInt(a, 10) : a;
     b = typeof b === "string" ? parseInt(b, 10) : b;
 
-    if (!Number.isInteger(a) || !Number.isInteger(b)) {
+    const [min, max] = b === undefined ? [0, a] : [a, b];
+
+    if (!Number.isInteger(min) || !Number.isInteger(max)) {
       throw new TypeError("random takes one or two integer arguments");
     }
 
-    return a + this.randomUInt32() % (b - a + 1);
+    return min + this.randomUInt32() % (max - min + 1);
   }
 
   randomByte(): number {
@@ -217,5 +206,4 @@ RC4.RC4small = RC4small;
 if (typeof module !== "undefined" && module.exports) {
   module.exports = RC4;
   module.exports.RC4small = RC4small;
-  module.exports.default = RC4;
 }

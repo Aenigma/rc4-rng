@@ -1,8 +1,8 @@
 /* global describe, it */
 "use strict";
 
-var RC4 = require("../dist/rc4.js");
-var assert = require("assert");
+import RC4 from "../src/rc4.ts";
+import assert from "node:assert";
 
 function sq(x) {
   return x * x;
