@@ -2,7 +2,7 @@
 /* global describe, it */
 "use strict";
 
-import RC4 from "../src/rc4";
+import RC4 from "../src/rc4.js";
 import assert from "node:assert";
 
 function sq(x) {

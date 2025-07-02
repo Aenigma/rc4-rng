@@ -2,9 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "lib": ["es2015"],
-    "module": "commonjs",
+    "module": "preserve",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "isolatedModules": true,
+    "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": ".",

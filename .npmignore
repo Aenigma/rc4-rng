@@ -1,9 +1,0 @@
-.npmignore
-.gitignore
-.eslintrc
-.github/
-
-synopsis.js
-
-coverage/
-test/

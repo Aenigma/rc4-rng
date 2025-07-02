@@ -186,7 +186,3 @@ export class RC4small extends RC4 {
 }
 
 RC4.RC4small = RC4small;
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = RC4;
-  module.exports.RC4small = RC4small;
-}
